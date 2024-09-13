@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Streaming and Full Download Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+    }
+
+    .video-container {
+      width: 45%;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .video-container h2 {
+      text-align: center;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #log {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Video Streaming Section -->
+  <div class="video-container">
+    <h2>Video with Streaming</h2>
+    <video id="videoPlayerStreaming" controls>
+      <source src="http://localhost:3000/video" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div id="log">Waiting for updates...</div>
+  </div>
+
+  <!-- Full Video Download Section -->
+  <div class="video-container">
+    <h2>Video without Streaming</h2>
+    <video id="videoPlayerFull" controls>
+      <source src="http://localhost:3000/video-full" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <script>
+    const logDiv = document.getElementById('log');
+
+    // Create a new EventSource to listen for SSE from the server
+    const eventSource = new EventSource('http://localhost:3000/events');
+
+    eventSource.onmessage = (event) => {
+      // Append the new data from the server to the log
+      logDiv.innerHTML += `<p>${event.data}</p>`;
+    };
+
+    eventSource.onerror = (event) => {
+      logDiv.innerHTML += `<p>Error occurred: ${event.message}</p>`;
+      eventSource.close();
+    };
+  </script>
+
+</body>
+</html>
